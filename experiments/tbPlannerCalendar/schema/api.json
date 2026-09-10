@@ -1,0 +1,147 @@
+[
+  {
+    "namespace": "tbPlannerCalendar",
+    "functions": [
+      {
+        "name": "ping",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "listCalendars",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "listItems",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "createTodo",
+        "type": "function",
+        "description": "Erzeugt ein neues VTODO mit Titel, Startdatum und Dauer.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "type": "string"
+          },
+          {
+            "name": "duration",
+            "type": "integer"
+          }
+        ]
+      },
+      {
+        "name": "updateItem",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "itemId",
+            "type": "string"
+          },
+          {
+            "name": "wbs",
+            "type": "string"
+          },
+          {
+            "name": "parentId",
+            "type": "string"
+          },
+          {
+            "name": "order",
+            "type": "integer"
+          }
+        ]
+      },
+      {
+        "name": "deleteItem",
+        "type": "function",
+        "description": "Löscht ein vorhandenes VTODO aus einem Kalender.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "itemId",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "updateDates",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "itemId",
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "updateTodo",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "itemId",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "percentComplete",
+            "type": "integer"
+          }
+        ]
+      }
+    ]
+  }
+]

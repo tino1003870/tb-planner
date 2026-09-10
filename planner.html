@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>TB Planner</title>
+
+  <link rel="stylesheet" href="planner.css">
+</head>
+
+<body>
+
+<header class="toolbar">
+
+  <div class="title">
+    <strong>TB Planner</strong>
+    <span>Projektplanung</span>
+  </div>
+
+  <label class="calendar-control">
+    Kalender:
+    <select id="calendarSelect"></select>
+  </label>
+
+  <button id="refreshButton" title="Kalender neu laden">
+    ↻
+  </button>
+
+  <button id="createTaskButton" type="button">
+    Task erstellen
+  </button>
+
+  <button id="renameTaskButton" type="button" disabled>
+    Tasktitel ändern
+  </button>
+
+  <span class="toolbar-separator"></span>
+
+  <div class="toolbar-group">
+    <span class="toolbar-label">WBS:</span>
+
+    <button id="indentButton" title="Aufgabe einrücken">
+      → Einrücken
+    </button>
+
+    <button id="outdentButton" title="Aufgabe ausrücken">
+      ← Ausrücken
+    </button>
+
+    <button id="upButton" title="Aufgabe nach oben">
+      ↑
+    </button>
+
+    <button id="downButton" title="Aufgabe nach unten">
+      ↓
+    </button>
+  </div>
+
+  <span class="toolbar-separator"></span>
+
+  <div class="time-control">
+    <span class="toolbar-label">Zeit:</span>
+
+    <button id="minusWeekButton" title="Aufgabe 1 Woche zurück">
+      − Woche
+    </button>
+
+    <button id="minusDayButton" title="Aufgabe 1 Tag zurück">
+      − Tag
+    </button>
+
+    <button id="plusDayButton" title="Aufgabe 1 Tag vor">
+      + Tag
+    </button>
+
+    <button id="plusWeekButton" title="Aufgabe 1 Woche vor">
+      + Woche
+    </button>
+  </div>
+
+  <div class="duration-control">
+    <span class="toolbar-label">Dauer:</span>
+
+    <button id="minusDurationButton"
+            title="Aufgabe um 1 Tag verkürzen">
+      − Tag
+    </button>
+
+    <button id="plusDurationButton"
+            title="Aufgabe um 1 Tag verlängern">
+      + Tag
+    </button>
+  </div>
+
+  <span class="toolbar-separator"></span>
+
+  <div class="zoom-control">
+    <span class="toolbar-label">Zoom:</span>
+
+    <button data-zoom="day">Tag</button>
+    <button data-zoom="week" class="active">Woche</button>
+    <button data-zoom="month">Monat</button>
+  </div>
+
+  <span id="status"></span>
+
+</header>
+
+<main>
+  <div id="planner"></div>
+
+  <section id="todoEditor" class="todo-editor hidden">
+
+    <div class="todo-editor-header">
+      <strong>VTODO bearbeiten</strong>
+      <span id="todoEditorTask"></span>
+    </div>
+
+    <div class="todo-editor-body">
+
+      <label>
+        Titel:
+        <input
+          id="todoTitleInput"
+          type="text"
+          autocomplete="off"
+        >
+      </label>
+
+      <label>
+        Beschreibung:
+        <textarea
+          id="todoDescriptionInput"
+          rows="4"
+        ></textarea>
+      </label>
+
+      <label>
+        Fortschritt:
+        <div class="progress-editor">
+          <input
+            id="todoProgressInput"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="0"
+          >
+          <output id="todoProgressValue">0 %</output>
+        </div>
+      </label>
+
+      <div class="todo-editor-actions">
+
+        <button
+          id="todoSaveButton"
+          type="button"
+        >
+          Speichern
+        </button>
+
+        <button
+          id="todoCancelButton"
+          type="button"
+        >
+          Abbrechen
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+</main>
+
+<script src="planner.js"></script>
+
+</body>
+</html>

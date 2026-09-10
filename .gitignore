@@ -1,0 +1,12 @@
+# Thunderbird / Build
+*.xpi
+
+# Entwicklungs-Backups
+*.bak
+*.bak-*
+*.before-*
+
+# Editor / OS
+*~
+*.swp
+.DS_Store

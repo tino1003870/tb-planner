@@ -1,0 +1,52 @@
+{
+  "manifest_version": 2,
+  "name": "TB Planner",
+  "version": "0.3.0",
+  "description": "WBS- und Gantt-Projektplanung auf Basis von Thunderbird-Kalendern.",
+  "applications": {
+    "gecko": {
+      "id": "tb-planner@example.local",
+      "strict_min_version": "128.0"
+    }
+  },
+  "background": {
+    "scripts": [
+      "src/background.js"
+    ]
+  },
+  "browser_action": {
+    "default_title": "TB Planner öffnen",
+    "default_label": "TB Planner",
+    "allowed_spaces": [],
+    "default_windows": [
+      "normal"
+    ]
+  },
+  "experiment_apis": {
+    "tbPlannerCalendar": {
+      "schema": "experiments/tbPlannerCalendar/schema/api.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "script": "experiments/tbPlannerCalendar/parent/implementation.js",
+        "paths": [
+          [
+            "tbPlannerCalendar"
+          ]
+        ]
+      }
+    }
+  },
+  "commands": {
+    "open-planner": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+P"
+      },
+      "description": "TB Planner öffnen"
+    }
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
