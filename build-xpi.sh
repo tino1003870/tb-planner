@@ -3,7 +3,7 @@
 set -e
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-OUT="$ROOT/tb-planner-0.3.0.xpi"
+OUT="$ROOT/tb-planner-0.4.0.xpi"
 
 echo "=============================================="
 echo " TB Planner – XPI BUILD"
