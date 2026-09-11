@@ -414,6 +414,15 @@ main {
   font-weight: 450;
 }
 
+.task-description {
+  margin-top: 4px;
+  white-space: pre-wrap;
+  line-height: 1.35;
+  font-size: 10px;
+  color: #555;
+}
+
+
 .task-dates {
   display: block;
 
@@ -694,4 +703,27 @@ main {
 .todo-editor-actions {
   display: flex;
   gap: 6px;
+}
+
+
+/* ============================================================
+   TODO BESCHREIBUNG
+   ============================================================ */
+
+.todo-description-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+
+#todoDescriptionInput {
+  display: block;
+  width: 100%;
+  min-height: 220px;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.4;
+  margin-bottom: 12px;
 }

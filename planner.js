@@ -2241,6 +2241,13 @@ function render() {
       );
 
 
+    const description =
+      item.description &&
+      item.description.trim()
+        ? `<div class="task-description">${escapeHtml(item.description)}</div>`
+        : "";
+
+
     title.innerHTML = `
       <div class="task-title">
         ${escapeHtml(
@@ -2254,6 +2261,8 @@ function render() {
         –
         ${formatDate(item.end)}
       </span>
+
+      ${description}
     `;
 
 
