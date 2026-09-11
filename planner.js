@@ -10,6 +10,9 @@ const createTaskButton =
 const renameTaskButton =
   document.getElementById("renameTaskButton");
 
+const deleteTaskButton =
+  document.getElementById("deleteTaskButton");
+
 const indentButton =
   document.getElementById("indentButton");
 
@@ -936,6 +939,16 @@ async function loadItems() {
     await browser.tbPlannerCalendar
       .listItems(calendarId);
 
+  // VTODOs ohne Start-/Enddatum sind gültige
+  // Thunderbird-VTODOs, können aber nicht im Gantt
+  // dargestellt werden. Deshalb ignorieren wir sie hier.
+  items = items.filter(
+    item =>
+      item.type === "task" &&
+      item.startDate &&
+      item.endDate
+  );
+
 
   // TEMPORÄRE DIAGNOSE
   const acc2 =
@@ -1244,6 +1257,144 @@ async function createTask() {
 
     createTaskButton.disabled =
       false;
+  }
+}
+
+
+// ============================================================
+// TASK LÖSCHEN
+// ============================================================
+
+async function deleteSelectedTask() {
+
+  if (!selectedId) {
+    return;
+  }
+
+
+  const item =
+    items.find(
+      item => item.id === selectedId
+    );
+
+
+  if (!item) {
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      `Task "${item.title}" wirklich löschen?`
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const calendarId =
+    calendarSelect.value;
+
+
+  try {
+
+    deleteTaskButton.disabled =
+      true;
+
+
+    console.log(
+      "=== TASK LÖSCHEN ==="
+    );
+
+    console.log(
+      "Task:",
+      {
+        id: item.id,
+        title: item.title,
+        calendarId
+      }
+    );
+
+
+    await browser.tbPlannerCalendar.deleteItem(
+      calendarId,
+      item.id
+    );
+
+
+    // ----------------------------------------------------------
+    // Lokale Aufgabenliste aktualisieren
+    // ----------------------------------------------------------
+
+    items =
+      items.filter(
+        current =>
+          current.id !== item.id
+      );
+
+
+    // ----------------------------------------------------------
+    // WBS-Hierarchie aktualisieren
+    // ----------------------------------------------------------
+
+    hierarchy.order =
+      hierarchy.order.filter(
+        id =>
+          id !== item.id
+      );
+
+
+    delete hierarchy.parent[item.id];
+
+
+    collapsed.delete(item.id);
+
+
+    // ----------------------------------------------------------
+    // Auswahl zurücksetzen
+    // ----------------------------------------------------------
+
+    selectedId =
+      null;
+
+
+    saveHierarchy();
+
+    render();
+
+    updateButtons();
+
+
+    console.log(
+      "TASK GELÖSCHT:",
+      item.title
+    );
+
+    console.log(
+      "=== TASK LÖSCHEN ENDE ==="
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "TASK-LÖSCHUNG FEHLGESCHLAGEN:",
+      error
+    );
+
+
+    window.alert(
+      "Task konnte nicht gelöscht werden:\n\n" +
+      error
+    );
+
+
+  } finally {
+
+    deleteTaskButton.disabled =
+      !selectedId;
   }
 }
 
@@ -2850,6 +3001,11 @@ function updateButtons() {
       !enabled;
   }
 
+  if (deleteTaskButton) {
+    deleteTaskButton.disabled =
+      !enabled;
+  }
+
 
   indentButton.disabled =
     !enabled;
@@ -2910,6 +3066,12 @@ createTaskButton.addEventListener(
 renameTaskButton.addEventListener(
   "click",
   renameSelectedTask
+);
+
+
+deleteTaskButton.addEventListener(
+  "click",
+  deleteSelectedTask
 );
 
 

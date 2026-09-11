@@ -36,8 +36,19 @@ function itemToPlainObject(item) {
     description:
       item.getProperty("DESCRIPTION") || "",
 
-    startDate: dateToString(item.startDate),
-    endDate: dateToString(item.endDate),
+    startDate:
+      dateToString(
+        item.isTodo && item.isTodo()
+          ? item.entryDate
+          : item.startDate
+      ),
+
+    endDate:
+      dateToString(
+        item.isTodo && item.isTodo()
+          ? item.dueDate
+          : item.endDate
+      ),
 
     entryDate: dateToString(item.entryDate),
     dueDate: dateToString(item.dueDate),

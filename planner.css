@@ -359,7 +359,8 @@ main {
 }
 
 .row.selected {
-  background: #e7f0fa;
+  background: #d8e8f8;
+  box-shadow: inset 4px 0 0 #4a78a8;
 }
 
 .row.root-row {
