@@ -125,4 +125,11 @@ Das Skript übernimmt die lokalen Änderungen in einen Git-Commit und pusht den 
 
 ## Lizenz
 
-Derzeit noch nicht festgelegt.
+**Frei wie Freibier.**
+
+Copyright (c) 2026 Tino Schurzmann.
+
+Dieses Projekt steht unter der MIT License.
+
+Du darfst die Software frei verwenden, kopieren, verändern und
+weitergeben – auch für kommerzielle Zwecke.
