@@ -14,106 +14,128 @@
 
 <header class="toolbar">
 
-  <div class="title">
-    <strong>TB Planner</strong>
-    <span>Projektplanung</span>
+  <div class="toolbar-row toolbar-row-top">
+
+    <div class="title">
+      <strong>TB Planner</strong>
+      <span>Projektplanung</span>
+    </div>
+
+    <label class="calendar-control">
+      Kalender:
+      <select id="calendarSelect"></select>
+    </label>
+
+    <button id="refreshButton" title="Kalender neu laden">
+      ↻
+    </button>
+
+    <button id="exportProjectButton" type="button">
+      Exportieren
+    </button>
+
+    <button id="importProjectButton" type="button">
+      Importieren
+    </button>
+
+    <button id="createTaskButton" type="button">
+      Task erstellen
+    </button>
+
+    <button id="renameTaskButton" type="button" disabled>
+      Tasktitel ändern
+    </button>
+
+    <button id="deleteTaskButton" type="button" disabled>
+      Task löschen
+    </button>
+
   </div>
 
-  <label class="calendar-control">
-    Kalender:
-    <select id="calendarSelect"></select>
-  </label>
 
-  <button id="refreshButton" title="Kalender neu laden">
-    ↻
-  </button>
+  <div class="toolbar-row toolbar-row-bottom">
 
-  <button id="createTaskButton" type="button">
-    Task erstellen
-  </button>
+    <div class="toolbar-group">
+      <span class="toolbar-label">WBS:</span>
 
-  <button id="renameTaskButton" type="button" disabled>
-    Tasktitel ändern
-  </button>
+      <button id="indentButton" title="Aufgabe einrücken">
+        → Einrücken
+      </button>
 
-  <button id="deleteTaskButton" type="button" disabled>
-    Task löschen
-  </button>
+      <button id="outdentButton" title="Aufgabe ausrücken">
+        ← Ausrücken
+      </button>
 
-  <span class="toolbar-separator"></span>
+      <button id="upButton" title="Aufgabe nach oben">
+        ↑
+      </button>
 
-  <div class="toolbar-group">
-    <span class="toolbar-label">WBS:</span>
+      <button id="downButton" title="Aufgabe nach unten">
+        ↓
+      </button>
+    </div>
 
-    <button id="indentButton" title="Aufgabe einrücken">
-      → Einrücken
-    </button>
 
-    <button id="outdentButton" title="Aufgabe ausrücken">
-      ← Ausrücken
-    </button>
+    <div class="time-control">
+      <span class="toolbar-label">Zeit:</span>
 
-    <button id="upButton" title="Aufgabe nach oben">
-      ↑
-    </button>
+      <button id="minusWeekButton" title="Aufgabe 1 Woche zurück">
+        − Woche
+      </button>
 
-    <button id="downButton" title="Aufgabe nach unten">
-      ↓
-    </button>
+      <button id="minusDayButton" title="Aufgabe 1 Tag zurück">
+        − Tag
+      </button>
+
+      <button id="plusDayButton" title="Aufgabe 1 Tag vor">
+        + Tag
+      </button>
+
+      <button id="plusWeekButton" title="Aufgabe 1 Woche vor">
+        + Woche
+      </button>
+    </div>
+
+
+    <div class="duration-control">
+      <span class="toolbar-label">Dauer:</span>
+
+      <button id="minusDurationButton"
+              title="Aufgabe um 1 Tag verkürzen">
+        − Tag
+      </button>
+
+      <button id="plusDurationButton"
+              title="Aufgabe um 1 Tag verlängern">
+        + Tag
+      </button>
+    </div>
+
+
+    <div class="zoom-control">
+      <span class="toolbar-label">Zoom:</span>
+
+      <button data-zoom="day">Tag</button>
+      <button data-zoom="week">Woche</button>
+      <button data-zoom="month">Monat</button>
+      <button data-zoom="kw" class="active">KW</button>
+    </div>
+
+    <span id="status"></span>
+
   </div>
-
-  <span class="toolbar-separator"></span>
-
-  <div class="time-control">
-    <span class="toolbar-label">Zeit:</span>
-
-    <button id="minusWeekButton" title="Aufgabe 1 Woche zurück">
-      − Woche
-    </button>
-
-    <button id="minusDayButton" title="Aufgabe 1 Tag zurück">
-      − Tag
-    </button>
-
-    <button id="plusDayButton" title="Aufgabe 1 Tag vor">
-      + Tag
-    </button>
-
-    <button id="plusWeekButton" title="Aufgabe 1 Woche vor">
-      + Woche
-    </button>
-  </div>
-
-  <div class="duration-control">
-    <span class="toolbar-label">Dauer:</span>
-
-    <button id="minusDurationButton"
-            title="Aufgabe um 1 Tag verkürzen">
-      − Tag
-    </button>
-
-    <button id="plusDurationButton"
-            title="Aufgabe um 1 Tag verlängern">
-      + Tag
-    </button>
-  </div>
-
-  <span class="toolbar-separator"></span>
-
-  <div class="zoom-control">
-    <span class="toolbar-label">Zoom:</span>
-
-    <button data-zoom="day">Tag</button>
-    <button data-zoom="week" class="active">Woche</button>
-    <button data-zoom="month">Monat</button>
-  </div>
-
-  <span id="status"></span>
 
 </header>
 
 <main>
   <div id="planner"></div>
+
+  <input
+    id="importFileInput"
+    type="file"
+    accept=".json,.tbplanner.json,application/json"
+    hidden
+  >
 
   <section id="todoEditor" class="todo-editor hidden">
 
@@ -180,6 +202,47 @@
 
   </section>
 </main>
+
+  <dialog id="importDialog">
+
+    <form method="dialog">
+
+      <h2>Projekt importieren</h2>
+
+      <div id="importSummary"></div>
+
+      <div
+        id="importPreview"
+        class="import-preview"
+      ></div>
+
+      <p class="import-warning">
+        Die bestehenden VTODOs im ausgewählten Kalender
+        werden gelöscht und durch die importierten VTODOs ersetzt.
+      </p>
+
+      <div class="import-actions">
+
+        <button
+          id="importCancelButton"
+          type="button"
+        >
+          Abbrechen
+        </button>
+
+        <button
+          id="importConfirmButton"
+          type="button"
+        >
+          VTODOs überschreiben
+        </button>
+
+      </div>
+
+    </form>
+
+  </dialog>
+
 
 <script src="planner.js"></script>
 

@@ -86,6 +86,10 @@ let items = [];
 
 let selectedId = null;
 
+let pendingImportProject = null;
+
+
+
 let collapsed = new Set();
 
 let hierarchy = {
@@ -93,7 +97,7 @@ let hierarchy = {
   parent: {}
 };
 
-let zoomMode = "week";
+let zoomMode = "kw";
 
 
 // ============================================================
@@ -436,7 +440,7 @@ async function syncHierarchyToCalendar() {
       calendarSelect.value,
       id,
       number,
-      parentId,
+      parentId || "",
       siblingOrder
     );
   }
@@ -1526,6 +1530,74 @@ async function renameSelectedTask() {
 // ZOOM
 // ============================================================
 
+function startOfWeek(date) {
+
+  const result =
+    startOfDay(date);
+
+  const weekday =
+    result.getDay();
+
+  const daysFromMonday =
+    (weekday + 6) % 7;
+
+  return addDays(
+    result,
+    -daysFromMonday
+  );
+}
+
+
+function getISOWeek(date) {
+
+  const d =
+    startOfDay(date);
+
+  const day =
+    (d.getDay() + 6) % 7;
+
+  d.setDate(
+    d.getDate() - day + 3
+  );
+
+  const firstThursday =
+    new Date(
+      d.getFullYear(),
+      0,
+      4
+    );
+
+  const firstDay =
+    (firstThursday.getDay() + 6) % 7;
+
+  firstThursday.setDate(
+    firstThursday.getDate() - firstDay + 3
+  );
+
+  return (
+    1 +
+    Math.round(
+      (
+        d -
+        firstThursday
+      ) /
+      604800000
+    )
+  );
+}
+
+
+function getWeekKey(date) {
+
+  const monday =
+    startOfWeek(date);
+
+  return monday
+    .toISOString()
+    .slice(0, 10);
+}
+
+
 function getDayWidth() {
 
   switch (zoomMode) {
@@ -1534,6 +1606,9 @@ function getDayWidth() {
       return 50;
 
     case "month":
+      return 12;
+
+    case "kw":
       return 12;
 
     case "week":
@@ -2017,60 +2092,94 @@ function render() {
 
 
   // ----------------------------------------------------------
-  // Tage / Wochen
+  // Tage / Wochen / Kalenderwochen
   // ----------------------------------------------------------
 
-  for (
-    let i = 0;
-    i < totalDays;
-    i++
-  ) {
+  if (zoomMode === "kw") {
 
-    const date =
-      addDays(
-        minDate,
-        i
+    let currentMonday = startOfWeek(minDate);
+    let kwIndex = 0;
+
+    while (currentMonday <= maxDate) {
+
+      const weekHeader =
+        document.createElement("div");
+
+      weekHeader.className =
+        "week-header";
+
+      weekHeader.style.left =
+        `${kwIndex * 7 * dayWidth}px`;
+
+      weekHeader.style.width =
+        `${7 * dayWidth}px`;
+
+      weekHeader.textContent =
+        `KW ${getISOWeek(currentMonday)}`;
+
+      timelineHeader.appendChild(
+        weekHeader
       );
 
+      currentMonday =
+        addDays(currentMonday, 7);
 
-    const week =
-      document.createElement(
-        "div"
-      );
-
-    week.className =
-      "week-header";
-
-    week.style.left =
-      `${i * dayWidth}px`;
-
-    week.style.width =
-      `${dayWidth}px`;
-
-
-    if (zoomMode === "month") {
-
-      week.textContent =
-        date.getDate();
-
-    } else {
-
-      const weekday =
-        date.toLocaleDateString(
-          "de-DE",
-          {
-            weekday: "short"
-          }
-        );
-
-      week.textContent =
-        `${weekday} ${date.getDate()}`;
+      kwIndex++;
     }
 
+  } else {
 
-    timelineHeader.appendChild(
-      week
-    );
+    for (
+      let i = 0;
+      i < totalDays;
+      i++
+    ) {
+
+      const date =
+        addDays(
+          minDate,
+          i
+        );
+
+      const week =
+        document.createElement(
+          "div"
+        );
+
+      week.className =
+        "week-header";
+
+      week.style.left =
+        `${i * dayWidth}px`;
+
+      week.style.width =
+        `${dayWidth}px`;
+
+
+      if (zoomMode === "month") {
+
+        week.textContent =
+          date.getDate();
+
+      } else {
+
+        const weekday =
+          date.toLocaleDateString(
+            "de-DE",
+            {
+              weekday: "short"
+            }
+          );
+
+        week.textContent =
+          `${weekday} ${date.getDate()}`;
+      }
+
+
+      timelineHeader.appendChild(
+        week
+      );
+    }
   }
 
 
@@ -2990,6 +3099,917 @@ function updateTodoEditor() {
 }
 
 
+
+// ============================================================
+// PROJEKT EXPORTIEREN
+// ============================================================
+
+function exportProject() {
+
+  const calendar =
+    calendarSelect.options[
+      calendarSelect.selectedIndex
+    ];
+
+  const calendarId =
+    calendarSelect.value;
+
+  if (!calendarId) {
+    alert("Bitte zuerst einen Kalender auswählen.");
+    return;
+  }
+
+
+  const tasks =
+    items
+      .filter(
+        item =>
+          item.type === "task"
+      )
+      .map(
+        item => ({
+          id:
+            item.id || null,
+
+          title:
+            item.title || "",
+
+          description:
+            item.description || "",
+
+          start:
+            item.start || null,
+
+          end:
+            item.end || null,
+
+          entryDate:
+            item.entryDate || null,
+
+          dueDate:
+            item.dueDate || null,
+
+          percentComplete:
+            Number.isFinite(
+              item.percentComplete
+            )
+              ? item.percentComplete
+              : 0,
+
+          parentId:
+            item.parentId || null,
+
+          order:
+            Number.isInteger(
+              item.order
+            )
+              ? item.order
+              : 0,
+
+          wbs:
+            item.wbs || null
+        })
+      );
+
+
+  const project = {
+
+    format:
+      "tb-planner",
+
+    version:
+      1,
+
+    exported:
+      new Date().toISOString(),
+
+    calendar:
+      calendar
+        ? calendar.textContent
+        : "",
+
+    tasks
+
+  };
+
+
+  const json =
+    JSON.stringify(
+      project,
+      null,
+      2
+    );
+
+
+  const blob =
+    new Blob(
+      [json],
+      {
+        type:
+          "application/json"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+  const date =
+    new Date()
+      .toISOString()
+      .slice(
+        0,
+        10
+      );
+
+  link.href =
+    url;
+
+  link.download =
+    `tb-planner-${date}.tbplanner.json`;
+
+  document.body.appendChild(
+    link
+  );
+
+  link.click();
+
+  link.remove();
+
+  URL.revokeObjectURL(
+    url
+  );
+
+
+  console.log(
+    "TB Planner: Projekt exportiert",
+    {
+      calendar:
+        calendar
+          ? calendar.textContent
+          : "",
+      tasks:
+        tasks.length
+    }
+  );
+}
+
+
+// ============================================================
+// PROJEKT IMPORT
+// ============================================================
+
+const importProjectButton =
+  document.getElementById(
+    "importProjectButton"
+  );
+
+const importFileInput =
+  document.getElementById(
+    "importFileInput"
+  );
+
+const importDialog =
+  document.getElementById(
+    "importDialog"
+  );
+
+const importSummary =
+  document.getElementById(
+    "importSummary"
+  );
+
+const importPreview =
+  document.getElementById(
+    "importPreview"
+  );
+
+const importCancelButton =
+  document.getElementById(
+    "importCancelButton"
+  );
+
+const importConfirmButton =
+  document.getElementById(
+    "importConfirmButton"
+  );
+
+
+function importDatePart(value) {
+
+  if (!value) {
+    return null;
+  }
+
+  const text =
+    String(value);
+
+  const match =
+    text.match(
+      /^(\d{8})/
+    );
+
+  return match
+    ? match[1]
+    : null;
+}
+
+
+function importDateText(value) {
+
+  const date =
+    importDatePart(
+      value
+    );
+
+  if (!date) {
+    return "";
+  }
+
+  return (
+    date.slice(6, 8) +
+    "." +
+    date.slice(4, 6) +
+    "." +
+    date.slice(0, 4)
+  );
+}
+
+
+function importDuration(
+  startValue,
+  endValue
+) {
+
+  const start =
+    importDatePart(
+      startValue
+    );
+
+  const end =
+    importDatePart(
+      endValue
+    );
+
+  if (!start || !end) {
+    return null;
+  }
+
+  const startDate =
+    new Date(
+      Number(start.slice(0, 4)),
+      Number(start.slice(4, 6)) - 1,
+      Number(start.slice(6, 8))
+    );
+
+  const endDate =
+    new Date(
+      Number(end.slice(0, 4)),
+      Number(end.slice(4, 6)) - 1,
+      Number(end.slice(6, 8))
+    );
+
+  const days =
+    Math.round(
+      (
+        endDate.getTime() -
+        startDate.getTime()
+      ) /
+      86400000
+    ) + 1;
+
+  return days > 0
+    ? days
+    : null;
+}
+
+
+function validateImportProject(
+  project
+) {
+
+  if (
+    !project ||
+    project.format !== "tb-planner"
+  ) {
+    throw new Error(
+      "Die Datei ist keine gültige TB-Planner-Projektdatei."
+    );
+  }
+
+
+  if (
+    project.version !== 1
+  ) {
+    throw new Error(
+      "Nicht unterstützte TB-Planner-Dateiversion: " +
+      project.version
+    );
+  }
+
+
+  if (
+    !Array.isArray(
+      project.tasks
+    )
+  ) {
+    throw new Error(
+      "Die Projektdatei enthält keine gültige Taskliste."
+    );
+  }
+
+
+  for (
+    let i = 0;
+    i < project.tasks.length;
+    i++
+  ) {
+
+    const task =
+      project.tasks[i];
+
+    if (
+      !task.id ||
+      typeof task.title !== "string"
+    ) {
+      throw new Error(
+        "Task " +
+        (i + 1) +
+        " ist ungültig."
+      );
+    }
+
+    if (
+      !importDatePart(
+        task.entryDate
+      ) ||
+      !importDatePart(
+        task.dueDate
+      )
+    ) {
+      throw new Error(
+        'Task "' +
+        task.title +
+        '" besitzt kein gültiges Start- und Enddatum.'
+      );
+    }
+
+    if (
+      importDuration(
+        task.entryDate,
+        task.dueDate
+      ) === null
+    ) {
+      throw new Error(
+        'Task "' +
+        task.title +
+        '" besitzt einen ungültigen Datumsbereich.'
+      );
+    }
+  }
+}
+
+
+function showImportPreview(
+  project
+) {
+
+  pendingImportProject =
+    project;
+
+
+  const calendar =
+    calendarSelect.options[
+      calendarSelect.selectedIndex
+    ];
+
+
+  importSummary.textContent =
+    (
+      project.tasks.length +
+      " Task(s) aus Projektdatei" +
+      (
+        project.calendar
+          ? " (" +
+            project.calendar +
+            ")"
+          : ""
+      )
+    );
+
+
+  importPreview.innerHTML =
+    "";
+
+
+  project.tasks.forEach(
+    task => {
+
+      const entry =
+        document.createElement(
+          "div"
+        );
+
+      entry.className =
+        "import-preview-task";
+
+
+      const title =
+        document.createElement(
+          "div"
+        );
+
+      title.className =
+        "import-preview-title";
+
+      title.textContent =
+        (
+          task.wbs
+            ? task.wbs + "  "
+            : ""
+        ) +
+        task.title;
+
+
+      const meta =
+        document.createElement(
+          "div"
+        );
+
+      meta.className =
+        "import-preview-meta";
+
+      meta.textContent =
+        importDateText(
+          task.entryDate
+        ) +
+        " – " +
+        importDateText(
+          task.dueDate
+        ) +
+        (
+          Number.isFinite(
+            task.percentComplete
+          )
+            ? " · " +
+              task.percentComplete +
+              " %"
+            : ""
+        );
+
+
+      entry.appendChild(
+        title
+      );
+
+      entry.appendChild(
+        meta
+      );
+
+
+      if (
+        task.description &&
+        task.description.trim()
+      ) {
+
+        const description =
+          document.createElement(
+            "div"
+          );
+
+        description.className =
+          "import-preview-description";
+
+        description.textContent =
+          task.description;
+
+        entry.appendChild(
+          description
+        );
+      }
+
+
+      importPreview.appendChild(
+        entry
+      );
+    }
+  );
+
+
+  importConfirmButton.disabled =
+    !calendar ||
+    calendar.disabled;
+
+
+  importDialog.showModal();
+}
+
+
+async function importProjectFile(
+  event
+) {
+
+  const file =
+    event.target.files &&
+    event.target.files[0];
+
+  if (!file) {
+    return;
+  }
+
+
+  try {
+
+    const text =
+      await file.text();
+
+    const project =
+      JSON.parse(
+        text
+      );
+
+
+    validateImportProject(
+      project
+    );
+
+
+    showImportPreview(
+      project
+    );
+
+  } catch (error) {
+
+    console.error(
+      "TB Planner: Import fehlgeschlagen",
+      error
+    );
+
+    alert(
+      "Import fehlgeschlagen:\n\n" +
+      error.message
+    );
+
+  } finally {
+
+    importFileInput.value =
+      "";
+  }
+}
+
+
+async function executeProjectImport() {
+
+  if (!pendingImportProject) {
+    return;
+  }
+
+
+  const calendarId =
+    calendarSelect.value;
+
+  if (!calendarId) {
+    alert(
+      "Bitte zuerst einen Kalender auswählen."
+    );
+    return;
+  }
+
+
+  const tasks =
+    pendingImportProject.tasks;
+
+
+  importConfirmButton.disabled =
+    true;
+
+  importCancelButton.disabled =
+    true;
+
+
+  try {
+
+    console.log(
+      "TB Planner: Projektimport START",
+      {
+        calendarId,
+        tasks: tasks.length
+      }
+    );
+
+
+    // --------------------------------------------------------
+    // Bestehende VTODOs löschen
+    // --------------------------------------------------------
+
+    const existingItems =
+      await browser.tbPlannerCalendar.listItems(
+        calendarId
+      );
+
+
+    const existingTodos =
+      existingItems.filter(
+        item =>
+          item.type === "task"
+      );
+
+
+    console.log(
+      "TB Planner: vorhandene VTODOs:",
+      existingTodos.length
+    );
+
+
+    for (
+      const item of existingTodos
+    ) {
+
+      await browser.tbPlannerCalendar.deleteItem(
+        calendarId,
+        item.id
+      );
+    }
+
+
+    // --------------------------------------------------------
+    // Importierte Tasks in WBS-Reihenfolge erzeugen
+    // --------------------------------------------------------
+
+    const sortedTasks =
+      [...tasks].sort(
+        (a, b) => {
+
+          const awbs =
+            String(
+              a.wbs || ""
+            )
+              .split(".")
+              .map(
+                Number
+              );
+
+          const bwbs =
+            String(
+              b.wbs || ""
+            )
+              .split(".")
+              .map(
+                Number
+              );
+
+          const length =
+            Math.max(
+              awbs.length,
+              bwbs.length
+            );
+
+          for (
+            let i = 0;
+            i < length;
+            i++
+          ) {
+
+            const av =
+              awbs[i] ?? -1;
+
+            const bv =
+              bwbs[i] ?? -1;
+
+            if (
+              av !== bv
+            ) {
+              return av - bv;
+            }
+          }
+
+          return 0;
+        }
+      );
+
+
+    const idMap =
+      new Map();
+
+
+    for (
+      const task of sortedTasks
+    ) {
+
+      const startDate =
+        importDatePart(
+          task.entryDate
+        );
+
+      const endDate =
+        importDatePart(
+          task.dueDate
+        );
+
+      const duration =
+        importDuration(
+          task.entryDate,
+          task.dueDate
+        );
+
+
+      const created =
+        await browser.tbPlannerCalendar.createTodo(
+          calendarId,
+          task.title || "",
+          startDate,
+          duration
+        );
+
+
+      if (
+        !created ||
+        !created.id
+      ) {
+        throw new Error(
+          'Task "' +
+          task.title +
+          '" konnte nicht erzeugt werden.'
+        );
+      }
+
+
+      const newId =
+        created.id;
+
+
+      idMap.set(
+        task.id,
+        newId
+      );
+
+
+      await browser.tbPlannerCalendar.updateTodo(
+        calendarId,
+        newId,
+        task.title || "",
+        task.description || "",
+        Number.isFinite(
+          task.percentComplete
+        )
+          ? task.percentComplete
+          : 0
+      );
+
+
+      const newParentId =
+        task.parentId
+          ? (
+              idMap.get(
+                task.parentId
+              ) || ""
+            )
+          : "";
+
+
+      await browser.tbPlannerCalendar.updateItem(
+        calendarId,
+        newId,
+        task.wbs || "",
+        newParentId,
+        Number.isInteger(
+          task.order
+        )
+          ? task.order
+          : 0
+      );
+
+
+      // createTodo verwendet bereits Start + Dauer.
+      // updateDates stellt zusätzlich das exakte Enddatum wieder her.
+      await browser.tbPlannerCalendar.updateDates(
+        calendarId,
+        newId,
+        startDate,
+        endDate
+      );
+    }
+
+
+    pendingImportProject =
+      null;
+
+
+    importDialog.close();
+
+
+    selectedId =
+      null;
+
+
+    await loadItems();
+
+
+    console.log(
+      "TB Planner: Projektimport erfolgreich"
+    );
+
+
+    alert(
+      "Projekt erfolgreich importiert.\n\n" +
+      tasks.length +
+      " Task(s) wurden übernommen."
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "TB Planner: Projektimport FEHLER",
+      error
+    );
+
+
+    alert(
+      "Projektimport fehlgeschlagen:\n\n" +
+      error.message +
+      "\n\n" +
+      "Der Kalender kann nach einem Fehler teilweise importierte VTODOs enthalten."
+    );
+
+
+  } finally {
+
+    importConfirmButton.disabled =
+      false;
+
+    importCancelButton.disabled =
+      false;
+  }
+}
+
+
+if (importProjectButton) {
+
+  importProjectButton.addEventListener(
+    "click",
+    () => {
+
+      if (
+        !calendarSelect.value
+      ) {
+
+        alert(
+          "Bitte zuerst einen Kalender auswählen."
+        );
+
+        return;
+      }
+
+
+      importFileInput.click();
+    }
+  );
+}
+
+
+if (importFileInput) {
+
+  importFileInput.addEventListener(
+    "change",
+    importProjectFile
+  );
+}
+
+
+if (importCancelButton) {
+
+  importCancelButton.addEventListener(
+    "click",
+    () => {
+
+      pendingImportProject =
+        null;
+
+      importDialog.close();
+    }
+  );
+}
+
+
+if (importConfirmButton) {
+
+  importConfirmButton.addEventListener(
+    "click",
+    executeProjectImport
+  );
+}
+
+
+
 // ============================================================
 // BUTTONS
 // ============================================================
@@ -3054,6 +4074,22 @@ function updateButtons() {
 // ============================================================
 // EVENTS
 // ============================================================
+
+const exportProjectButton =
+  document.getElementById(
+    "exportProjectButton"
+  );
+
+
+if (exportProjectButton) {
+
+  exportProjectButton.addEventListener(
+    "click",
+    exportProject
+  );
+
+}
+
 
 calendarSelect.addEventListener(
   "change",

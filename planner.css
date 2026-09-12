@@ -727,3 +727,137 @@ main {
   line-height: 1.4;
   margin-bottom: 12px;
 }
+
+
+/* ============================================================
+   PROJEKT IMPORT
+   ============================================================ */
+
+#importDialog {
+  width: min(900px, 90vw);
+  max-height: 85vh;
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+#importDialog h2 {
+  margin-top: 0;
+}
+
+#importSummary {
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.import-preview {
+  max-height: 50vh;
+  overflow: auto;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  margin-bottom: 16px;
+}
+
+.import-preview-task {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.import-preview-task:last-child {
+  border-bottom: none;
+}
+
+.import-preview-title {
+  font-weight: 600;
+}
+
+.import-preview-meta {
+  font-size: 11px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.import-preview-description {
+  margin-top: 4px;
+  white-space: pre-wrap;
+  color: #555;
+  font-size: 11px;
+}
+
+.import-warning {
+  padding: 10px;
+  border: 1px solid #d8b36a;
+  background: #fff8e6;
+  margin-bottom: 16px;
+}
+
+.import-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+
+/* ============================================================
+   TOOLBAR – ZWEI ECHTE ZEILEN
+   ============================================================ */
+
+.toolbar {
+  height: 76px;
+  min-height: 76px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  gap: 2px;
+
+  padding: 4px 12px;
+}
+
+
+.toolbar-row {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  min-height: 32px;
+}
+
+
+.toolbar-row-top {
+  flex: 0 0 32px;
+}
+
+
+.toolbar-row-bottom {
+  flex: 0 0 32px;
+}
+
+
+/* Titel */
+.toolbar-row-top .title {
+  min-width: 150px;
+  margin-right: 6px;
+}
+
+
+/* Zweite Zeile */
+.toolbar-row-bottom .toolbar-group,
+.toolbar-row-bottom .time-control,
+.toolbar-row-bottom .duration-control,
+.toolbar-row-bottom .zoom-control {
+  flex-shrink: 0;
+}
+
+
+/* Status ganz nach rechts */
+.toolbar-row-bottom #status {
+  margin-left: auto;
+}
+
+
+/* Trennlinien werden bei zwei echten Zeilen nicht benötigt */
+.toolbar-separator {
+  display: none;
+}
