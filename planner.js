@@ -943,14 +943,15 @@ async function loadItems() {
     await browser.tbPlannerCalendar
       .listItems(calendarId);
 
-  // VTODOs ohne Start-/Enddatum sind gültige
-  // Thunderbird-VTODOs, können aber nicht im Gantt
-  // dargestellt werden. Deshalb ignorieren wir sie hier.
+  // Nur VTODOs übernehmen.
+  //
+  // WICHTIG: Auch VTODOs ohne Start-/Enddatum bleiben erhalten.
+  // Sie sind gültige Tasks und müssen in der Taskliste sichtbar
+  // bleiben. Das Gantt stellt für solche Tasks lediglich keinen
+  // Balken dar.
   items = items.filter(
     item =>
-      item.type === "task" &&
-      item.startDate &&
-      item.endDate
+      item.type === "task"
   );
 
 
@@ -1870,18 +1871,34 @@ function render() {
   }
 
 
-  // Nur Aufgaben mit einem tatsächlichen oder automatisch
-  // berechneten Zeitraum darstellen.
+  // Alle Tasks darstellen.
+  //
+  // Tasks ohne gültigen Zeitraum bleiben in der Taskliste sichtbar,
+  // werden aber bei der Berechnung der Gantt-Zeitachse nicht
+  // berücksichtigt und erhalten keinen Balken.
   const tasks =
-    Array.from(taskMap.values())
-      .filter(
-        task =>
-          task.start &&
-          task.end
-      );
+    Array.from(taskMap.values());
+
+  const datedTasks =
+    tasks.filter(
+      task =>
+        task.start &&
+        task.end
+    );
 
 
   if (!tasks.length) {
+
+    planner.innerHTML =
+      `<div class="empty">
+        Keine Aufgaben.
+       </div>`;
+
+    return;
+  }
+
+
+  if (!datedTasks.length) {
 
     planner.innerHTML =
       `<div class="empty">
@@ -1897,7 +1914,7 @@ function render() {
 
 
   const range =
-    calculateRange(tasks);
+    calculateRange(datedTasks);
 
 
   const minDate =
@@ -2511,6 +2528,14 @@ function render() {
     // --------------------------------------------------------
     // Balken
     // --------------------------------------------------------
+
+    // Kein Gantt-Balken für Tasks ohne vollständigen Zeitraum.
+    // Die Taskzeile selbst bleibt sichtbar.
+    if (!item.start || !item.end) {
+      gantt.appendChild(row);
+      continue;
+    }
+
 
     const offset =
       diffDays(
