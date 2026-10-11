@@ -1,250 +1,409 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-  <title>TB Planner</title>
+    <title>TB Planner – Thunderbird</title>
 
-  <link rel="stylesheet" href="planner.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<header class="toolbar">
+<header class="planner-header">
 
-  <div class="toolbar-row toolbar-row-top">
-
-    <div class="title">
-      <strong>TB Planner</strong>
-      <span>Projektplanung</span>
+    <div class="title-row">
+        <h1>TB Planner</h1>
     </div>
 
-    <label class="calendar-control">
-      Kalender:
-      <select id="calendarSelect"></select>
-    </label>
-
-    <button id="refreshButton" title="Kalender neu laden">
-      ↻
-    </button>
-
-    <button id="exportProjectButton" type="button">
-      Exportieren
-    </button>
-
-    <button id="importProjectButton" type="button">
-      Importieren
-    </button>
-
-    <button id="createTaskButton" type="button">
-      Task erstellen
-    </button>
-
-    <button id="renameTaskButton" type="button" disabled>
-      Tasktitel ändern
-    </button>
-
-    <button id="deleteTaskButton" type="button" disabled>
-      Task löschen
-    </button>
-
-  </div>
-
-
-  <div class="toolbar-row toolbar-row-bottom">
-
-    <div class="toolbar-group">
-      <span class="toolbar-label">WBS:</span>
-
-      <button id="indentButton" title="Aufgabe einrücken">
-        → Einrücken
-      </button>
-
-      <button id="outdentButton" title="Aufgabe ausrücken">
-        ← Ausrücken
-      </button>
-
-      <button id="upButton" title="Aufgabe nach oben">
-        ↑
-      </button>
-
-      <button id="downButton" title="Aufgabe nach unten">
-        ↓
-      </button>
+    <div class="connection-row">
+        <label for="calendarSelect">Kalender:</label>
+        <select id="calendarSelect"></select>
+        <button id="refreshButton" type="button">Aktualisieren</button>
     </div>
 
 
-    <div class="time-control">
-      <span class="toolbar-label">Zeit:</span>
+    <div class="planner-toolbar">
 
-      <button id="minusWeekButton" title="Aufgabe 1 Woche zurück">
-        − Woche
-      </button>
+        <div class="toolbar-section task-section">
 
-      <button id="minusDayButton" title="Aufgabe 1 Tag zurück">
-        − Tag
-      </button>
+            <div class="toolbar-section-title">Task</div>
 
-      <button id="plusDayButton" title="Aufgabe 1 Tag vor">
-        + Tag
-      </button>
+            <div class="toolbar-group">
 
-      <button id="plusWeekButton" title="Aufgabe 1 Woche vor">
-        + Woche
-      </button>
+                <button id="newTaskButton" type="button">
+                    Task erstellen
+                </button>
+
+                <button id="renameTaskButton" type="button" disabled>
+                    Titel ändern
+                </button>
+
+                <button id="deleteTaskButton" type="button" disabled>
+                    Task löschen
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="toolbar-section">
+
+            <div class="toolbar-section-title">Struktur</div>
+
+            <div class="toolbar-group">
+
+                <button id="indentButton" type="button" disabled>
+                    → Einrücken
+                </button>
+
+                <button id="outdentButton" type="button" disabled>
+                    ← Ausrücken
+                </button>
+
+                <button id="moveUpButton" type="button" disabled>
+                    ↑
+                </button>
+
+                <button id="moveDownButton" type="button" disabled>
+                    ↓
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="toolbar-section">
+
+            <div class="toolbar-section-title">Termin</div>
+
+            <div class="toolbar-group">
+
+                <button id="previousWeekButton" type="button">
+                    − Woche
+                </button>
+
+                <button id="previousDayButton" type="button">
+                    − Tag
+                </button>
+
+                <button id="nextDayButton" type="button">
+                    + Tag
+                </button>
+
+                <button id="nextWeekButton" type="button">
+                    + Woche
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="toolbar-section">
+
+            <div class="toolbar-section-title">Dauer</div>
+
+            <div class="toolbar-group">
+
+                <button id="durationMinusButton" type="button">
+                    − Dauer
+                </button>
+
+                <button id="durationPlusButton" type="button">
+                    + Dauer
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="toolbar-section zoom-section">
+
+            <div class="toolbar-section-title">Ansicht</div>
+
+            <div class="toolbar-group zoom-group">
+
+                <button id="zoomDayButton" type="button">
+                    Tag
+                </button>
+
+                <button id="zoomWeekButton" type="button">
+                    Woche
+                </button>
+
+                <button id="zoomMonthButton" type="button">
+                    Monat
+                </button>
+
+                <button id="zoomYearButton" type="button">
+                    KW
+                </button>
+
+            </div>
+
+
+        <div class="toolbar-section file-section">
+
+            <div class="toolbar-section-title">Datei</div>
+
+            <div class="toolbar-group">
+
+                <button
+                    id="importButton"
+                    type="button">
+                    Import
+                </button>
+
+                <button
+                    id="exportButton"
+                    type="button">
+                    Export
+                </button>
+
+            </div>
+
+        </div>
+        </div>
+
     </div>
-
-
-    <div class="duration-control">
-      <span class="toolbar-label">Dauer:</span>
-
-      <button id="minusDurationButton"
-              title="Aufgabe um 1 Tag verkürzen">
-        − Tag
-      </button>
-
-      <button id="plusDurationButton"
-              title="Aufgabe um 1 Tag verlängern">
-        + Tag
-      </button>
-    </div>
-
-
-    <div class="zoom-control">
-      <span class="toolbar-label">Zoom:</span>
-
-      <button data-zoom="day">Tag</button>
-      <button data-zoom="week">Woche</button>
-      <button data-zoom="month">Monat</button>
-      <button data-zoom="kw" class="active">KW</button>
-    </div>
-
-    <span id="status"></span>
-
-  </div>
 
 </header>
 
-<main>
-  <div id="planner"></div>
 
-  <input
-    id="importFileInput"
-    type="file"
-    accept=".json,.tbplanner.json,application/json"
-    hidden
-  >
+<main class="planner-main">
 
-  <section id="todoEditor" class="todo-editor hidden">
+    <section class="planner">
+
+        <div class="planner-table-header">
+
+            <div class="wbs-header">
+                WBS
+            </div>
+
+            <div class="task-header">
+                Aufgabe
+            </div>
+
+            <div
+                id="timelineHeader"
+                class="timeline-header"
+            >
+                <!-- timeline generated by JavaScript -->
+            </div>
+
+        </div>
+
+
+        <div
+            id="plannerRows"
+            class="planner-rows"
+        >
+            <!-- planner rows generated by JavaScript -->
+        </div>
+
+    </section>
+
+<section
+    id="todoEditor"
+    class="todo-editor hidden"
+>
 
     <div class="todo-editor-header">
-      <strong>VTODO bearbeiten</strong>
-      <span id="todoEditorTask"></span>
+
+        <strong>VTODO bearbeiten</strong>
+
+        <span id="todoEditorTask"></span>
+
     </div>
+
 
     <div class="todo-editor-body">
 
-      <label>
-        Titel:
-        <input
-          id="todoTitleInput"
-          type="text"
-          autocomplete="off"
-        >
-      </label>
+        <div class="editor-field">
 
-      <label class="todo-description-label">
-        Beschreibung:
-      </label>
+            <label for="todoTitleInput">
+                Titel:
+            </label>
 
-      <textarea
-        id="todoDescriptionInput"
-        rows="10"
-        placeholder="Beschreibung des Tasks …"
-      ></textarea>
+            <input
+                id="todoTitleInput"
+                type="text"
+                autocomplete="off"
+            >
 
-      <label>
-        Fortschritt:
-        <div class="progress-editor">
-          <input
-            id="todoProgressInput"
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value="0"
-          >
-          <output id="todoProgressValue">0 %</output>
         </div>
-      </label>
 
-      <div class="todo-editor-actions">
 
-        <button
-          id="todoSaveButton"
-          type="button"
-        >
-          Speichern
-        </button>
+        <div class="editor-field">
 
-        <button
-          id="todoCancelButton"
-          type="button"
-        >
-          Abbrechen
-        </button>
+            <label for="todoDescriptionInput">
+                Beschreibung:
+            </label>
 
-      </div>
+            <textarea
+                id="todoDescriptionInput"
+                rows="5"
+                placeholder="Beschreibung des Tasks ..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="editor-field">
+
+            <label for="todoProgressInput">
+                Erfüllungsgrad:
+            </label>
+
+            <div class="progress-editor">
+
+                <input
+                    id="todoProgressInput"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="0"
+                >
+
+                <output id="todoProgressValue">
+                    0 %
+                </output>
+
+            </div>
+
+        </div>
+
+
+        <div class="editor-info-grid">
+
+            <div>
+
+                <label for="todoStartInput">
+                    Start:
+                </label>
+
+                <input
+                    id="todoStartInput"
+                    type="date"
+                    disabled
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Fällig:
+                </label>
+
+                <span id="todoDueValue">
+                    -
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <label for="todoDurationInput">
+                    Dauer:
+                </label>
+
+                <input
+                    id="todoDurationInput"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value="1"
+                    disabled
+                >
+
+                <span>Tag(e)</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="todo-editor-actions">
+
+            <button
+                id="todoSaveButton"
+                type="button"
+            >
+                Speichern
+            </button>
+
+
+            <button
+                id="todoCancelButton"
+                type="button"
+            >
+                Abbrechen
+            </button>
+
+
+            <button
+                id="todoDeleteButton"
+                type="button"
+                class="danger-button"
+            >
+                Task löschen
+            </button>
+
+        </div>
 
     </div>
 
-  </section>
+</section>
+
+
+
 </main>
 
-  <dialog id="importDialog">
 
-    <form method="dialog">
+<footer class="planner-footer">
 
-      <h2>Projekt importieren</h2>
+    <span id="status">
+        Bereit
+    </span>
 
-      <div id="importSummary"></div>
-
-      <div
-        id="importPreview"
-        class="import-preview"
-      ></div>
-
-      <p class="import-warning">
-        Die bestehenden VTODOs im ausgewählten Kalender
-        werden gelöscht und durch die importierten VTODOs ersetzt.
-      </p>
-
-      <div class="import-actions">
-
-        <button
-          id="importCancelButton"
-          type="button"
-        >
-          Abbrechen
-        </button>
-
-        <button
-          id="importConfirmButton"
-          type="button"
-        >
-          VTODOs überschreiben
-        </button>
-
-      </div>
-
-    </form>
-
-  </dialog>
+</footer>
 
 
-<script src="planner.js"></script>
+<!--
+    Debug output is deliberately kept in the DOM.
+    It can be hidden later without removing the functionality.
+-->
+
+<section class="debug-panel">
+
+    <details>
+
+        <summary>CalDAV Debug</summary>
+
+        <pre id="headers"></pre>
+
+        <pre id="response"></pre>
+
+        <pre id="debug"></pre>
+
+    </details>
+
+</section>
+
+
+<script type="module" src="src/planner.js"></script>
 
 </body>
 </html>

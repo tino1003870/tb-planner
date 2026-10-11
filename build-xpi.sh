@@ -3,7 +3,7 @@
 set -e
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-OUT="$ROOT/tb-planner-0.5.0.xpi"
+OUT="$ROOT/tb-planner-0.6.9.xpi"
 
 echo "=============================================="
 echo " TB Planner – XPI BUILD"
@@ -16,8 +16,8 @@ echo "===== SYNTAXPRÜFUNG ====="
 
 if command -v node >/dev/null 2>&1; then
 
-    node --check planner.js
-    echo "planner.js: OK"
+    node --check src/planner.js
+    echo "src/planner.js: OK"
 
     node --check src/background.js
     echo "background.js: OK"
@@ -51,13 +51,15 @@ rm -f "$OUT"
 echo
 echo "===== XPI ERZEUGEN ====="
 
-zip -q -r "$OUT" \
+zip -q "$OUT" \
     manifest.json \
     planner.html \
-    planner.js \
-    planner.css \
-    src \
-    experiments
+    README.md \
+    src/background.js \
+    src/planner.js \
+    css/style.css \
+    experiments/tbPlannerCalendar/parent/implementation.js \
+    experiments/tbPlannerCalendar/schema/api.json
 
 echo
 echo "===== XPI INHALT ====="

@@ -28,24 +28,25 @@
       {
         "name": "createTodo",
         "type": "function",
-        "description": "Erzeugt ein neues VTODO mit Titel, Startdatum und Dauer.",
         "async": true,
         "parameters": [
           {
-            "name": "calendarId",
-            "type": "string"
-          },
-          {
-            "name": "title",
-            "type": "string"
-          },
-          {
-            "name": "startDate",
-            "type": "string"
-          },
-          {
-            "name": "duration",
-            "type": "integer"
+            "name": "details",
+            "type": "object",
+            "properties": {
+              "calendarId": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "startDate": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "integer"
+              }
+            }
           }
         ]
       },
@@ -55,40 +56,44 @@
         "async": true,
         "parameters": [
           {
-            "name": "calendarId",
-            "type": "string"
-          },
-          {
-            "name": "itemId",
-            "type": "string"
-          },
-          {
-            "name": "wbs",
-            "type": "string"
-          },
-          {
-            "name": "parentId",
-            "type": "string"
-          },
-          {
-            "name": "order",
-            "type": "integer"
+            "name": "details",
+            "type": "object",
+            "properties": {
+              "calendarId": {
+                "type": "string"
+              },
+              "itemId": {
+                "type": "string"
+              },
+              "wbs": {
+                "type": "string"
+              },
+              "parentId": {
+                "type": "string"
+              },
+              "order": {
+                "type": "integer"
+              }
+            }
           }
         ]
       },
       {
         "name": "deleteItem",
         "type": "function",
-        "description": "Löscht ein vorhandenes VTODO aus einem Kalender.",
         "async": true,
         "parameters": [
           {
-            "name": "calendarId",
-            "type": "string"
-          },
-          {
-            "name": "itemId",
-            "type": "string"
+            "name": "details",
+            "type": "object",
+            "properties": {
+              "calendarId": {
+                "type": "string"
+              },
+              "itemId": {
+                "type": "string"
+              }
+            }
           }
         ]
       },
@@ -98,20 +103,22 @@
         "async": true,
         "parameters": [
           {
-            "name": "calendarId",
-            "type": "string"
-          },
-          {
-            "name": "itemId",
-            "type": "string"
-          },
-          {
-            "name": "startDate",
-            "type": "string"
-          },
-          {
-            "name": "endDate",
-            "type": "string"
+            "name": "details",
+            "type": "object",
+            "properties": {
+              "calendarId": {
+                "type": "string"
+              },
+              "itemId": {
+                "type": "string"
+              },
+              "startDate": {
+                "type": "string"
+              },
+              "endDate": {
+                "type": "string"
+              }
+            }
           }
         ]
       },
@@ -121,24 +128,25 @@
         "async": true,
         "parameters": [
           {
-            "name": "calendarId",
-            "type": "string"
-          },
-          {
-            "name": "itemId",
-            "type": "string"
-          },
-          {
-            "name": "title",
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "type": "string"
-          },
-          {
-            "name": "percentComplete",
-            "type": "integer"
+            "name": "details",
+            "type": "object",
+            "properties": {
+              "calendarId": {
+                "type": "string"
+              },
+              "itemId": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "percentComplete": {
+                "type": "integer"
+              }
+            }
           }
         ]
       }

@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "TB Planner",
-  "version": "0.5.1",
-  "description": "WBS- und Gantt-Projektplanung auf Basis von Thunderbird-Kalendern.",
+  "name": "TB Planner – Thunderbird",
+  "version": "0.6.9",
+  "description": "WBS- und Gantt-Projektplanung auf Basis von Thunderbird-VTODOs.",
   "applications": {
     "gecko": {
       "id": "tb-planner@example.local",
